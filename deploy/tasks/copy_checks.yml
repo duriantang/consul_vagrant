@@ -1,0 +1,6 @@
+- name: copy checks
+  copy:
+    src: "{{ item }}"
+    dest: "{{ CONSUL_CONF_DIR }}"
+  with_fileglob:
+    - files/check_*.json

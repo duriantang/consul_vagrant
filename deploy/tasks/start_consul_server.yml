@@ -1,0 +1,15 @@
+- name: start consul
+  shell: |
+    CONSUL_UI_BETA=true \
+    nohup consul agent -server \
+    -bind="{{ ansible_eth1.ipv4.address }}" \
+    -bootstrap-expect=1 \
+    -client="{{ ansible_eth1.ipv4.address }}" \
+    -config-dir="{{ CONSUL_CONF_DIR }}" \
+    -data-dir="{{ CONSUL_DATA_DIR }}" \
+    -disable_anonymous_signature=true \
+    -disable_update_check=true \
+    -enable-script-checks=true \
+    -node=agent-"agent-{{ inventory_hostname }}" \
+    -ui \
+    >> /tmp/consul.log 2>&1 &

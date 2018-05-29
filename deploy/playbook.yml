@@ -1,0 +1,45 @@
+
+- hosts: all
+  vars:
+    CONSUL_DATA_DIR: /var/lib/consul
+    CONSUL_CONF_DIR: /etc/consul.d
+  tasks:
+    # - name: debug
+    #   debug:
+    #     msg: "{{ hostvars[inventory_hostname]}}"
+
+    - name: ping
+      ping:
+        data: pong
+
+    - name: copy consul
+      become: yes
+      copy:
+        src: files/consul
+        dest: /usr/bin/consul
+        mode: a+x
+
+    - name: mkdirs
+      become: yes
+      file:
+        dest: "{{ item }}"
+        state: directory
+      with_items:
+        - "{{ CONSUL_CONF_DIR }}"
+        - "{{ CONSUL_DATA_DIR }}"
+
+    - name: start consul
+      become: yes
+      include: tasks/start_consul_server.yml
+      when:
+        inventory_hostname == "c1"
+
+    - name: start consul
+      become: yes
+      include: tasks/start_consul_client.yml
+      when:
+        inventory_hostname != "c1"
+
+    - name: copy checks
+      become: yes
+      include: tasks/copy_checks.yml
